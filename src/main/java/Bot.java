@@ -1,6 +1,9 @@
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class Bot extends TelegramLongPollingBot {
@@ -24,8 +27,10 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        String message = update.getMessage().getText();
-        sendMessage(update.getMessage().getChatId().toString(), message);
+        Message message = update.getMessage();
+        String chatId = message.getChatId().toString();
+        String messageText = message.getText();
+        sendMessage(chatId, messageText);
     }
 
     @Override
@@ -38,3 +43,4 @@ public class Bot extends TelegramLongPollingBot {
         return token;
     }
 }
+
