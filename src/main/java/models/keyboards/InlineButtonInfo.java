@@ -1,3 +1,5 @@
+package models.keyboards;
+
 public class InlineButtonInfo {
     private final String buttonText;
     private final String callBackData;

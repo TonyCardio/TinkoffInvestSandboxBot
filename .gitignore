@@ -1,7 +1,7 @@
 # Default ignored files
 # Default ignored files
 .idea/
+.logs/
 *.iml
 target
-src/main/resources/config.properties
 /.idea/workspace.xml

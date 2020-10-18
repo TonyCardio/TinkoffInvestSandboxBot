@@ -1,36 +1,49 @@
+import handlers.*;
+import models.Handler;
+import models.UpdateReceiver;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
     private final String token;
+    private final UpdateReceiver updateReceiver;
 
     public Bot(String token) {
         this.token = token;
+        List<Handler> handlers = List.of(
+                new StartHandler(),
+                new AuthorizationHandler(),
+                new MainMenuHandler(),
+                new SearchAssetHandler(),
+                new ChoosePortfolioHandler());
+        updateReceiver = new UpdateReceiver(handlers);
     }
 
-    public synchronized void sendMessage(String chatId, String s) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.enableMarkdown(true);
-        sendMessage.setChatId(chatId);
-        sendMessage.setText(s);
-        try {
-            execute(sendMessage);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+    private synchronized void sendMessages(List<SendMessage> messages) {
+        for (SendMessage message : messages) {
+            message.enableMarkdown(true);
+            try {
+                execute(message);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        Message message = update.getMessage();
-        String chatId = message.getChatId().toString();
-        String messageText = message.getText();
-        sendMessage(chatId, messageText);
+        if (!update.hasCallbackQuery() &&
+                update.getMessage().getText().equals("/help")) {
+            sendMessages(UpdateReceiver.handleHelp(update));
+            return;
+        }
+
+        List<SendMessage> responseMessages = updateReceiver.handle(update);
+        sendMessages(responseMessages);
     }
 
     @Override
@@ -43,4 +56,3 @@ public class Bot extends TelegramLongPollingBot {
         return token;
     }
 }
-

@@ -8,7 +8,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
                 <configuration>
                     <source>9</source>
                     <target>9</target>
@@ -32,6 +31,19 @@
             <artifactId>telegrambots</artifactId>
             <version>4.9.1</version>
         </dependency>
+
+        <dependency>
+            <groupId>ru.tinkoff.invest</groupId>
+            <artifactId>openapi-java-sdk-core</artifactId>
+            <version>0.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.tinkoff.invest</groupId>
+            <artifactId>openapi-java-sdk-java8</artifactId>
+            <version>0.4.1</version>
+        </dependency>
+
     </dependencies>
 
 </project>
