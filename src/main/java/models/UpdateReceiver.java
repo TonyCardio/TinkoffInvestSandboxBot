@@ -51,7 +51,7 @@ public class UpdateReceiver {
                 final Message message = update.getMessage();
                 if (message.getText().equals("/start") && !user.getState().equals(State.NONE))
                     user.setState(State.NONE);
-                return getHandlerByState(user.getState()).handle(user, message);
+                return getHandlerByState(user.getState()).handleMessage(user, message);
             } else if (update.hasCallbackQuery()) {
                 final CallbackQuery callbackQuery = update.getCallbackQuery();
                 return getHandlerByCallBackQuery(callbackQuery.getData())

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class StartHandler implements Handler {
     @Override
-    public List<SendMessage> handle(User user, Message message) {
+    public List<SendMessage> handleMessage(User user, Message message) {
         String startText = "*Привет! Я InvestBot*\n" +
                 "Я помогу тебе улучшить твои навыки в инвестировании и трейдинге" +
                 "Для начала введи свой api-ключ для Tinkoff песочницы.\n" +

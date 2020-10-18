@@ -13,7 +13,7 @@ import java.util.List;
 
 public class SearchAssetHandler implements Handler {
     @Override
-    public List<SendMessage> handle(User user, Message message) {
+    public List<SendMessage> handleMessage(User user, Message message) {
         return Collections.emptyList();
     }
 

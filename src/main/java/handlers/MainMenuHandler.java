@@ -6,8 +6,6 @@ import models.User;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
 import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
 
@@ -16,21 +14,22 @@ import java.util.Collections;
 import java.util.List;
 
 public class MainMenuHandler implements Handler {
-    public static final String ADD_CURRENCY = "/add";
     public static final String SHOW_PORTFOLIO = "/show";
     public static final String FIND_ASSET = "/find";
-    public static final String CLEAR_PORTFOLIO = "/clear";
+    public static final String RESET_PORTFOLIO = "/reset";
 
 
     @Override
-    public List<SendMessage> handle(User user, Message message) {
+    public List<SendMessage> handleMessage(User user, Message message) {
         String text = message.getText();
         List<SendMessage> messages = new ArrayList<>();
 
         if (text.equalsIgnoreCase(SHOW_PORTFOLIO))
             messages = handleShow(user);
-        else if (text.equalsIgnoreCase(ADD_CURRENCY))
-            messages = handleChooseCurrency(user);
+        else if (text.equalsIgnoreCase(FIND_ASSET))
+            throw new UnsupportedOperationException();
+        else if (text.equalsIgnoreCase(RESET_PORTFOLIO))
+            throw new UnsupportedOperationException();
 
         user.setLastQueryTime();
         return messages;
@@ -41,23 +40,6 @@ public class MainMenuHandler implements Handler {
         return Collections.emptyList();
     }
 
-    private List<SendMessage> handleChooseCurrency(User user) {
-        //TODO: Keyboards.getCreateNewPortfolioKeyboard
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(
-                createInlineKeyboardButton("добавить 50$", "/USD"));
-        inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
-
-        return List.of(new SendMessage(user.getChatId(),
-                "Добавьте валюту")
-                .setReplyMarkup(inlineKeyboardMarkup));
-    }
-
-    private static InlineKeyboardButton createInlineKeyboardButton(String text, String command) {
-        return new InlineKeyboardButton()
-                .setText(text)
-                .setCallbackData(command);
-    }
 
     private List<SendMessage> handleShow(User user) {
         List<SendMessage> messages = new ArrayList<>();
@@ -85,6 +67,6 @@ public class MainMenuHandler implements Handler {
 
     @Override
     public List<String> handledCallBackQuery() {
-        return List.of(ADD_CURRENCY, SHOW_PORTFOLIO, FIND_ASSET, CLEAR_PORTFOLIO);
+        return Collections.emptyList();
     }
 }

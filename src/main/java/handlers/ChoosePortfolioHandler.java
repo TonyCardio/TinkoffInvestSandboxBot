@@ -26,27 +26,27 @@ public class ChoosePortfolioHandler implements Handler {
     private static final BigDecimal addUSDStep = new BigDecimal(50);
 
     @Override
-    public List<SendMessage> handle(User user, Message message) {
-        String text = message.getText();
-        List<SendMessage> messages = new ArrayList<>();
-
-        //TODO: replace with HashMap
-        if (text.equalsIgnoreCase(CONTINUE_WITH_OLD_PORTFOLIO)) {
-            messages = handleContinue(user);
-        } else if (text.equalsIgnoreCase(CREATE_NEW_PORTFOLIO))
-            messages = handleCreateNewPortfolio(user);
-        else if (text.equalsIgnoreCase(USD))
-            messages = handleAddCurrency(user, text);
-        else if (text.equalsIgnoreCase(ACCEPT))
-            messages = handleAccept(user);
-
-        user.setLastQueryTime();
-        return messages;
+    public List<SendMessage> handleMessage(User user, Message message) {
+        return Collections.emptyList();
     }
 
     @Override
     public List<SendMessage> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
-        return Collections.emptyList();
+        String command = callbackQuery.getData();
+        List<SendMessage> messages = new ArrayList<>();
+
+        //TODO: replace with HashMap
+        if (command.equalsIgnoreCase(CONTINUE_WITH_OLD_PORTFOLIO)) {
+            messages = handleContinue(user);
+        } else if (command.equalsIgnoreCase(CREATE_NEW_PORTFOLIO))
+            messages = handleCreateNewPortfolio(user);
+        else if (command.equalsIgnoreCase(USD))
+            messages = handleAddCurrency(user);
+        else if (command.equalsIgnoreCase(ACCEPT))
+            messages = handleAccept(user);
+
+        user.setLastQueryTime();
+        return messages;
     }
 
     private List<SendMessage> handleContinue(User user) {
@@ -76,7 +76,7 @@ public class ChoosePortfolioHandler implements Handler {
         return messages;
     }
 
-    private List<SendMessage> handleAddCurrency(User user, String message) {
+    private List<SendMessage> handleAddCurrency(User user) {
         user.increaseUSDAmount(addUSDStep);
 
         String text = String.format(

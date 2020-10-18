@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 
 public class AuthorizationHandler implements Handler {
     @Override
-    public List<SendMessage> handle(User user, Message message) {
+    public List<SendMessage> handleMessage(User user, Message message) {
         String text = message.getText();
         final Logger logger;
         try {

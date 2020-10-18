@@ -7,7 +7,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import java.util.List;
 
 public interface Handler {
-    List<SendMessage> handle(User user, Message message);
+    List<SendMessage> handleMessage(User user, Message message);
 
     List<SendMessage> handleCallbackQuery(User user, CallbackQuery callbackQuery);
 
