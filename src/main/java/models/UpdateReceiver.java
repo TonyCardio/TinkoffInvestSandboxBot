@@ -4,7 +4,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
 import java.util.Collections;
 import java.util.Date;
@@ -52,13 +51,11 @@ public class UpdateReceiver {
                 final Message message = update.getMessage();
                 if (message.getText().equals("/start") && !user.getState().equals(State.NONE))
                     user.setState(State.NONE);
-                return getHandlerByState(user.getState()).handle(user, message.getText());
+                return getHandlerByState(user.getState()).handle(user, message);
             } else if (update.hasCallbackQuery()) {
                 final CallbackQuery callbackQuery = update.getCallbackQuery();
-                final String data = callbackQuery.getData();
-                final Handler handler = getHandlerByCallBackQuery(data);
-
-                return handler.handle(user, data);
+                return getHandlerByCallBackQuery(callbackQuery.getData())
+                        .handleCallbackQuery(user, callbackQuery);
             }
             throw new UnsupportedOperationException();
         } catch (UnsupportedOperationException e) {

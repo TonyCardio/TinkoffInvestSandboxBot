@@ -4,6 +4,8 @@ import models.Handler;
 import models.State;
 import models.User;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
@@ -25,7 +27,8 @@ import java.util.logging.Logger;
 
 public class AuthorizationHandler implements Handler {
     @Override
-    public List<SendMessage> handle(User user, String message) {
+    public List<SendMessage> handle(User user, Message message) {
+        String text = message.getText();
         final Logger logger;
         try {
             logger = initLogger();
@@ -34,12 +37,12 @@ public class AuthorizationHandler implements Handler {
             return Collections.emptyList();
         }
 
-        OkHttpOpenApiFactory factory = new OkHttpOpenApiFactory(message, logger);
+        OkHttpOpenApiFactory factory = new OkHttpOpenApiFactory(text, logger);
         SandboxOpenApi api = factory.createSandboxOpenApiClient(Executors.newSingleThreadExecutor());
 
         boolean isValidToken = checkTokenValidity(api);
         List<SendMessage> messages = addAuthorisationResultMessages(
-                user.getChatId(), isValidToken, message);
+                user.getChatId(), isValidToken, text);
 
         if (isValidToken) {
             user.setApi(api);
@@ -48,6 +51,11 @@ public class AuthorizationHandler implements Handler {
 
         user.setLastQueryTime();
         return messages;
+    }
+
+    @Override
+    public List<SendMessage> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
+        return Collections.emptyList();
     }
 
     private List<SendMessage> addAuthorisationResultMessages(long chatId, boolean isAuth, String token) {

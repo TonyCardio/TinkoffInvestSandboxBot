@@ -4,6 +4,8 @@ import models.Handler;
 import models.State;
 import models.User;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
 import java.util.Collections;
@@ -11,7 +13,7 @@ import java.util.List;
 
 public class StartHandler implements Handler {
     @Override
-    public List<SendMessage> handle(User user, String message) {
+    public List<SendMessage> handle(User user, Message message) {
         String startText = "*Привет! Я InvestBot*\n" +
                 "Я помогу тебе улучшить твои навыки в инвестировании и трейдинге" +
                 "Для начала введи свой api-ключ для Tinkoff песочницы.\n" +
@@ -23,6 +25,11 @@ public class StartHandler implements Handler {
         user.setState(State.NON_AUTHORIZED);
         user.setLastQueryTime();
         return List.of(startMessage, authMessage);
+    }
+
+    @Override
+    public List<SendMessage> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
+        return Collections.emptyList();
     }
 
     @Override

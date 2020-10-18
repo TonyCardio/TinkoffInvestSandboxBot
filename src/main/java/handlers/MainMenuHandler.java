@@ -4,12 +4,15 @@ import models.Handler;
 import models.State;
 import models.User;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
 import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainMenuHandler implements Handler {
@@ -20,16 +23,22 @@ public class MainMenuHandler implements Handler {
 
 
     @Override
-    public List<SendMessage> handle(User user, String message) {
+    public List<SendMessage> handle(User user, Message message) {
+        String text = message.getText();
         List<SendMessage> messages = new ArrayList<>();
 
-        if (message.equalsIgnoreCase(SHOW_PORTFOLIO))
+        if (text.equalsIgnoreCase(SHOW_PORTFOLIO))
             messages = handleShow(user);
-        else if (message.equalsIgnoreCase(ADD_CURRENCY))
+        else if (text.equalsIgnoreCase(ADD_CURRENCY))
             messages = handleChooseCurrency(user);
 
         user.setLastQueryTime();
         return messages;
+    }
+
+    @Override
+    public List<SendMessage> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
+        return Collections.emptyList();
     }
 
     private List<SendMessage> handleChooseCurrency(User user) {

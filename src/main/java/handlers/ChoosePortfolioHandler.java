@@ -5,6 +5,8 @@ import models.State;
 import models.User;
 import models.keyboards.Keyboard;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.tinkoff.invest.openapi.SandboxContext;
@@ -13,6 +15,7 @@ import ru.tinkoff.invest.openapi.models.sandbox.CurrencyBalance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ChoosePortfolioHandler implements Handler {
@@ -23,21 +26,27 @@ public class ChoosePortfolioHandler implements Handler {
     private static final BigDecimal addUSDStep = new BigDecimal(50);
 
     @Override
-    public List<SendMessage> handle(User user, String message) {
+    public List<SendMessage> handle(User user, Message message) {
+        String text = message.getText();
         List<SendMessage> messages = new ArrayList<>();
 
         //TODO: replace with HashMap
-        if (message.equalsIgnoreCase(CONTINUE_WITH_OLD_PORTFOLIO)) {
+        if (text.equalsIgnoreCase(CONTINUE_WITH_OLD_PORTFOLIO)) {
             messages = handleContinue(user);
-        } else if (message.equalsIgnoreCase(CREATE_NEW_PORTFOLIO))
+        } else if (text.equalsIgnoreCase(CREATE_NEW_PORTFOLIO))
             messages = handleCreateNewPortfolio(user);
-        else if (message.equalsIgnoreCase(USD))
-            messages = handleAddCurrency(user, message);
-        else if (message.equalsIgnoreCase(ACCEPT))
+        else if (text.equalsIgnoreCase(USD))
+            messages = handleAddCurrency(user, text);
+        else if (text.equalsIgnoreCase(ACCEPT))
             messages = handleAccept(user);
 
         user.setLastQueryTime();
         return messages;
+    }
+
+    @Override
+    public List<SendMessage> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
+        return Collections.emptyList();
     }
 
     private List<SendMessage> handleContinue(User user) {
