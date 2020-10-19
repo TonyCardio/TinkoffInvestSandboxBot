@@ -12,6 +12,7 @@ import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainMenuHandler implements Handler {
@@ -19,20 +20,31 @@ public class MainMenuHandler implements Handler {
     public static final String FIND_ASSET = "/find";
     public static final String RESET_PORTFOLIO = "/reset";
 
+    private static final HashMap<String, String> replyButtonsToCommands =
+            new HashMap<>();
+
+    static {
+        replyButtonsToCommands.put("\uD83D\uDCBCПосмотреть портфель\uD83D\uDCBC", SHOW_PORTFOLIO);
+        replyButtonsToCommands.put("❌Сбросить портфель❌", RESET_PORTFOLIO);
+        replyButtonsToCommands.put("\uD83D\uDD0EНайти актив\uD83D\uDD0D", FIND_ASSET);
+    }
 
     @Override
     public List<BotApiMethod> handleMessage(User user, Message message) {
         String text = message.getText();
         List<BotApiMethod> messages = new ArrayList<>();
 
-        if (text.equalsIgnoreCase(SHOW_PORTFOLIO))
-            messages = handleShow(user);
-        else if (text.equalsIgnoreCase(FIND_ASSET))
-            throw new UnsupportedOperationException();
-        else if (text.equalsIgnoreCase(RESET_PORTFOLIO))
-            throw new UnsupportedOperationException();
+        if (replyButtonsToCommands.containsKey(text)) {
+            String command = replyButtonsToCommands.get(text);
+            if (command.equalsIgnoreCase(SHOW_PORTFOLIO))
+                messages = handleShow(user);
+            else if (command.equalsIgnoreCase(FIND_ASSET))
+                throw new UnsupportedOperationException();
+            else if (command.equalsIgnoreCase(RESET_PORTFOLIO))
+                throw new UnsupportedOperationException();
+            user.setLastQueryTime();
+        }
 
-        user.setLastQueryTime();
         return messages;
     }
 
@@ -56,7 +68,9 @@ public class MainMenuHandler implements Handler {
                     .append(position.balance.intValue())
                     .append("\n");
         }
-        messages.add(new SendMessage(user.getChatId(), positions.toString()));
+        messages.add(
+                new SendMessage(user.getChatId(), positions.toString())
+                        .enableMarkdown(true));
 
         return messages;
     }
