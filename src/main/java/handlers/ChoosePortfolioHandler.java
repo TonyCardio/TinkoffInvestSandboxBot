@@ -6,6 +6,7 @@ import models.User;
 import models.keyboards.Keyboard;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -42,7 +43,7 @@ public class ChoosePortfolioHandler implements Handler {
         } else if (command.equalsIgnoreCase(CREATE_NEW_PORTFOLIO))
             messages = handleCreateNewPortfolio(user);
         else if (command.equalsIgnoreCase(USD))
-            messages = handleAddCurrency(user);
+            messages = handleAddCurrency(user, callbackQuery.getMessage());
         else if (command.equalsIgnoreCase(ACCEPT))
             messages = handleAccept(user);
 
@@ -77,11 +78,12 @@ public class ChoosePortfolioHandler implements Handler {
         return messages;
     }
 
-    private List<BotApiMethod> handleAddCurrency(User user) {
+    private List<BotApiMethod> handleAddCurrency(User user, Message message) {
         user.increaseUSDAmount(addUSDStep);
 
-        String text = String.format(
-                "Количество валюты обновлено \nUSD: %s", user.getStartUSDAmount());
+        String text = String.format("Количество валюты обновлено \nUSD: %s\n\n" +
+                        "Добавьте валюту или подтвердите создание портфеля",
+                user.getStartUSDAmount());
 
         //TODO: Keyboards.getCreateNewPortfolioKeyboard
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -90,11 +92,11 @@ public class ChoosePortfolioHandler implements Handler {
                 createInlineKeyboardButton("Готово", ACCEPT));
         inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
 
-        return List.of(
-                new SendMessage(user.getChatId(), text),
-                new SendMessage(user.getChatId(),
-                        "Добавьте валюту или подтвердите создание портфеля")
-                        .setReplyMarkup(inlineKeyboardMarkup));
+        return List.of(new EditMessageText()
+                .setChatId(user.getChatId())
+                .setMessageId(message.getMessageId())
+                .setText(text)
+                .setReplyMarkup(inlineKeyboardMarkup));
     }
 
     private List<BotApiMethod> handleAccept(User user) {
