@@ -3,6 +3,7 @@ package handlers;
 import models.Handler;
 import models.State;
 import models.User;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -20,9 +21,9 @@ public class MainMenuHandler implements Handler {
 
 
     @Override
-    public List<SendMessage> handleMessage(User user, Message message) {
+    public List<BotApiMethod> handleMessage(User user, Message message) {
         String text = message.getText();
-        List<SendMessage> messages = new ArrayList<>();
+        List<BotApiMethod> messages = new ArrayList<>();
 
         if (text.equalsIgnoreCase(SHOW_PORTFOLIO))
             messages = handleShow(user);
@@ -36,13 +37,13 @@ public class MainMenuHandler implements Handler {
     }
 
     @Override
-    public List<SendMessage> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
+    public List<BotApiMethod> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
         return Collections.emptyList();
     }
 
 
-    private List<SendMessage> handleShow(User user) {
-        List<SendMessage> messages = new ArrayList<>();
+    private List<BotApiMethod> handleShow(User user) {
+        List<BotApiMethod> messages = new ArrayList<>();
 
         SandboxOpenApi api = user.getApi();
         Portfolio portfolio = api.getPortfolioContext().getPortfolio(null).join();

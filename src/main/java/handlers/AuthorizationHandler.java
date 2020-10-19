@@ -3,6 +3,7 @@ package handlers;
 import models.Handler;
 import models.State;
 import models.User;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -27,7 +28,7 @@ import java.util.logging.Logger;
 
 public class AuthorizationHandler implements Handler {
     @Override
-    public List<SendMessage> handleMessage(User user, Message message) {
+    public List<BotApiMethod> handleMessage(User user, Message message) {
         String text = message.getText();
         final Logger logger;
         try {
@@ -41,7 +42,7 @@ public class AuthorizationHandler implements Handler {
         SandboxOpenApi api = factory.createSandboxOpenApiClient(Executors.newSingleThreadExecutor());
 
         boolean isValidToken = checkTokenValidity(api);
-        List<SendMessage> messages = addAuthorisationResultMessages(
+        List<BotApiMethod> messages = addAuthorisationResultMessages(
                 user.getChatId(), isValidToken, text);
 
         if (isValidToken) {
@@ -54,12 +55,13 @@ public class AuthorizationHandler implements Handler {
     }
 
     @Override
-    public List<SendMessage> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
+    public List<BotApiMethod> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
         return Collections.emptyList();
     }
 
-    private List<SendMessage> addAuthorisationResultMessages(long chatId, boolean isAuth, String token) {
-        List<SendMessage> messages = new ArrayList<>();
+    private List<BotApiMethod> addAuthorisationResultMessages(long chatId, boolean isAuth, String token) {
+        List<BotApiMethod> messages = new ArrayList<>();
+
         if (isAuth) {
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
             List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(

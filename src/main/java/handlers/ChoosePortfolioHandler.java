@@ -4,6 +4,7 @@ import models.Handler;
 import models.State;
 import models.User;
 import models.keyboards.Keyboard;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -26,14 +27,14 @@ public class ChoosePortfolioHandler implements Handler {
     private static final BigDecimal addUSDStep = new BigDecimal(50);
 
     @Override
-    public List<SendMessage> handleMessage(User user, Message message) {
+    public List<BotApiMethod> handleMessage(User user, Message message) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<SendMessage> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
+    public List<BotApiMethod> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
         String command = callbackQuery.getData();
-        List<SendMessage> messages = new ArrayList<>();
+        List<BotApiMethod> messages = new ArrayList<>();
 
         //TODO: replace with HashMap
         if (command.equalsIgnoreCase(CONTINUE_WITH_OLD_PORTFOLIO)) {
@@ -49,8 +50,8 @@ public class ChoosePortfolioHandler implements Handler {
         return messages;
     }
 
-    private List<SendMessage> handleContinue(User user) {
-        List<SendMessage> messages = new ArrayList<>();
+    private List<BotApiMethod> handleContinue(User user) {
+        List<BotApiMethod> messages = new ArrayList<>();
 
         messages.add(new SendMessage(user.getChatId(),
                 "Вы работаете со старым портфелем")
@@ -59,8 +60,8 @@ public class ChoosePortfolioHandler implements Handler {
         return messages;
     }
 
-    private List<SendMessage> handleCreateNewPortfolio(User user) {
-        List<SendMessage> messages = new ArrayList<>();
+    private List<BotApiMethod> handleCreateNewPortfolio(User user) {
+        List<BotApiMethod> messages = new ArrayList<>();
 
         //TODO: Keyboards.getCreateNewPortfolioKeyboard
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
@@ -76,7 +77,7 @@ public class ChoosePortfolioHandler implements Handler {
         return messages;
     }
 
-    private List<SendMessage> handleAddCurrency(User user) {
+    private List<BotApiMethod> handleAddCurrency(User user) {
         user.increaseUSDAmount(addUSDStep);
 
         String text = String.format(
@@ -96,7 +97,7 @@ public class ChoosePortfolioHandler implements Handler {
                         .setReplyMarkup(inlineKeyboardMarkup));
     }
 
-    private List<SendMessage> handleAccept(User user) {
+    private List<BotApiMethod> handleAccept(User user) {
         CurrencyBalance currencyBalanceUSD = new CurrencyBalance(
                 Currency.USD, user.getStartUSDAmount());
 

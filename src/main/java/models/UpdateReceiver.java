@@ -1,5 +1,6 @@
 package models;
 
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -31,7 +32,7 @@ public class UpdateReceiver {
         chatIdToUser = new ConcurrentHashMap<Long, User>();
     }
 
-    public List<SendMessage> handle(Update update) {
+    public List<BotApiMethod> handle(Update update) {
         long chatId;
         if (isUpdateWithText(update))
             chatId = update.getMessage().getChatId();
@@ -79,9 +80,10 @@ public class UpdateReceiver {
                 .orElseThrow(UnsupportedOperationException::new);
     }
 
-    public static List<SendMessage> handleHelp(Update update) {
+    public static List<BotApiMethod> handleHelp(Update update) {
         String chatId = update.getMessage().getChatId().toString();
         SendMessage helpMessage = new SendMessage(chatId, helpers);
+        helpMessage.enableMarkdown(true);
         return List.of(helpMessage);
     }
 

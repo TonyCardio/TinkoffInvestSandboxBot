@@ -2,7 +2,7 @@ import handlers.*;
 import models.Handler;
 import models.UpdateReceiver;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -23,9 +23,12 @@ public class Bot extends TelegramLongPollingBot {
         updateReceiver = new UpdateReceiver(handlers);
     }
 
-    private synchronized void sendMessages(List<SendMessage> messages) {
-        for (SendMessage message : messages) {
-            message.enableMarkdown(true);
+    private synchronized void sendMessages(List<BotApiMethod> messages) {
+//        List<BotApiMethod> a = new ArrayList<>();
+//        messages.add(new EditMessageText());
+//        messages.add(new SendMessage());
+
+        for (BotApiMethod message : messages) {
             try {
                 execute(message);
             } catch (TelegramApiException e) {
@@ -42,7 +45,7 @@ public class Bot extends TelegramLongPollingBot {
             return;
         }
 
-        List<SendMessage> responseMessages = updateReceiver.handle(update);
+        List<BotApiMethod> responseMessages = updateReceiver.handle(update);
         sendMessages(responseMessages);
     }
 
