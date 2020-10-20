@@ -9,8 +9,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.tinkoff.invest.openapi.SandboxContext;
 import ru.tinkoff.invest.openapi.models.Currency;
 import ru.tinkoff.invest.openapi.models.sandbox.CurrencyBalance;
@@ -63,18 +61,9 @@ public class ChoosePortfolioHandler implements Handler {
 
     private List<BotApiMethod> handleCreateNewPortfolio(User user) {
         List<BotApiMethod> messages = new ArrayList<>();
-
-        //TODO: Keyboards.getCreateNewPortfolioKeyboard
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(
-                createInlineKeyboardButton("добавить 50$", USD),
-                createInlineKeyboardButton("Готово", ACCEPT));
-        inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
-
         messages.add(new SendMessage(user.getChatId(),
                 "Добавьте валюту или подтвердите создание портфеля")
-                .setReplyMarkup(inlineKeyboardMarkup));
-
+                .setReplyMarkup(Keyboard.getAddCurrencyKeyboard()));
         return messages;
     }
 
@@ -84,19 +73,13 @@ public class ChoosePortfolioHandler implements Handler {
         String text = String.format("Количество валюты обновлено \nUSD: %s\n\n" +
                         "Добавьте валюту или подтвердите создание портфеля",
                 user.getStartUSDAmount());
-
-        //TODO: Keyboards.getCreateNewPortfolioKeyboard
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(
-                createInlineKeyboardButton("добавить 50$", USD),
-                createInlineKeyboardButton("Готово", ACCEPT));
-        inlineKeyboardMarkup.setKeyboard(List.of(inlineKeyboardButtonsRowOne));
-
+        //git push -u origin keyboard-extension
+        //git merge keyboard-extension
         return List.of(new EditMessageText()
                 .setChatId(user.getChatId())
                 .setMessageId(message.getMessageId())
                 .setText(text)
-                .setReplyMarkup(inlineKeyboardMarkup));
+                .setReplyMarkup(Keyboard.getAddCurrencyKeyboard()));
     }
 
     private List<BotApiMethod> handleAccept(User user) {
@@ -113,11 +96,6 @@ public class ChoosePortfolioHandler implements Handler {
                 .setReplyMarkup(Keyboard.getMenuKeyboard()));
     }
 
-    private static InlineKeyboardButton createInlineKeyboardButton(String text, String command) {
-        return new InlineKeyboardButton()
-                .setText(text)
-                .setCallbackData(command);
-    }
 
     @Override
     public State handledState() {

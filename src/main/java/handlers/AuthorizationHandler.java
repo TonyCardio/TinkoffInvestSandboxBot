@@ -3,12 +3,11 @@ package handlers;
 import models.Handler;
 import models.State;
 import models.User;
+import models.keyboards.Keyboard;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
 import ru.tinkoff.invest.openapi.exceptions.WrongTokenException;
 import ru.tinkoff.invest.openapi.okhttp.OkHttpOpenApiFactory;
@@ -63,18 +62,8 @@ public class AuthorizationHandler implements Handler {
         List<BotApiMethod> messages = new ArrayList<>();
 
         if (isAuth) {
-            InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-            List<InlineKeyboardButton> inlineKeyboardButtonsRowOne = List.of(
-                    createInlineKeyboardButton(
-                            "Продолжить со старым портфелем", "/continue"));
-            List<InlineKeyboardButton> inlineKeyboardButtonsRowTwo = List.of(
-                    createInlineKeyboardButton(
-                            "Создать новый", "/create_new"));
-            inlineKeyboardMarkup.setKeyboard(
-                    List.of(inlineKeyboardButtonsRowOne, inlineKeyboardButtonsRowTwo));
-
             messages.add(new SendMessage(chatId, "Успешная авторизация")
-                    .setReplyMarkup(inlineKeyboardMarkup));
+                    .setReplyMarkup(Keyboard.getAuthKeyboard()));
         } else {
             messages.add(new SendMessage(chatId,
                     String.format("Невалидный токен: %s\n", token)));
@@ -84,11 +73,6 @@ public class AuthorizationHandler implements Handler {
         return messages;
     }
 
-    private static InlineKeyboardButton createInlineKeyboardButton(String text, String command) {
-        return new InlineKeyboardButton()
-                .setText(text)
-                .setCallbackData(command);
-    }
 
     private boolean checkTokenValidity(SandboxOpenApi api) {
         boolean isValidToken = false;
