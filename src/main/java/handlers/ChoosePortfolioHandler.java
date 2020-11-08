@@ -73,8 +73,7 @@ public class ChoosePortfolioHandler implements Handler {
         String text = String.format("Количество валюты обновлено \nUSD: %s\n\n" +
                         "Добавьте валюту или подтвердите создание портфеля",
                 user.getStartUSDAmount());
-        //git push -u origin keyboard-extension
-        //git merge keyboard-extension
+
         return List.of(new EditMessageText()
                 .setChatId(user.getChatId())
                 .setMessageId(message.getMessageId())

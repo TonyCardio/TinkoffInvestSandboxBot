@@ -7,8 +7,6 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
@@ -27,10 +25,6 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private synchronized void sendMessages(List<BotApiMethod> messages) {
-//        List<BotApiMethod> a = new ArrayList<>();
-//        messages.add(new EditMessageText());
-//        messages.add(new SendMessage());
-
         for (BotApiMethod message : messages) {
             try {
                 execute(message);
@@ -42,18 +36,6 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        /*
-        StringWriter writer = new StringWriter();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            mapper.writeValue(writer, update);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String result = writer.toString();
-        System.out.println(result);
-        */
-
         if (!update.hasCallbackQuery() &&
                 update.getMessage().getText().equals("/help")) {
             sendMessages(UpdateReceiver.handleHelp(update));
