@@ -6,6 +6,7 @@ import models.Handler;
 import models.State;
 import models.User;
 import models.keyboards.InlineButtonInfo;
+import models.keyboards.InlineKeyboard;
 import models.keyboards.Keyboard;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -58,7 +59,7 @@ public class SearchAssetHandler implements Handler {
             InstrumentsFigi.add(instr.figi);
         }
 
-        InlineKeyboardMarkup inlineKeyboard = KeyboardFactory.makeInlineKeyboard(keyboardButtons);
+        InlineKeyboard inlineKeyboard = new InlineKeyboard(keyboardButtons);
         return List.of(new SendMessage(user.getChatId(), "Выберите инструмент:")
                 .setReplyMarkup(inlineKeyboard));
     }

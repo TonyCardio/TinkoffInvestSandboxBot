@@ -12,7 +12,7 @@ import java.util.List;
 
 public class KeyboardsConverter {
 
-    public ReplyKeyboard getReplyKeyboardMarkup(ResponseKeyboard keyboard) {
+    public static ReplyKeyboard getReplyKeyboardMarkup(ResponseKeyboard keyboard) {
         List<KeyboardRow> rows = getKeyboardRows(keyboard.getKeyboardRows());
         ReplyKeyboardMarkup replyKeyboard = new ReplyKeyboardMarkup();
         replyKeyboard.setResizeKeyboard(true).setKeyboard(rows);
