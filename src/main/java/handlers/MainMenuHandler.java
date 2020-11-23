@@ -35,8 +35,8 @@ public class MainMenuHandler implements Handler {
     }
 
     @Override
-    public List<ResponseMessage> handleMessage(User user, UpdateWrapper wrapper) {
-        String text = wrapper.getMessageData();
+    public List<ResponseMessage> handleMessage(User user, UpdateWrapper update) {
+        String text = update.getMessageData();
         List<ResponseMessage> messages = new ArrayList<>();
 
         if (replyButtonsToCommands.containsKey(text)) {
