@@ -4,6 +4,7 @@ import models.Handler;
 import models.State;
 import models.User;
 import models.keyboards.Keyboard;
+import models.keyboards.KeyboardType;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -11,6 +12,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
 import ru.tinkoff.invest.openapi.exceptions.WrongTokenException;
 import ru.tinkoff.invest.openapi.okhttp.OkHttpOpenApiFactory;
+import wrappers.ResponseMessage;
+import wrappers.SimpleMessageResponse;
+import wrappers.UpdateWrapper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -27,8 +31,8 @@ import java.util.logging.Logger;
 
 public class AuthorizationHandler implements Handler {
     @Override
-    public List<BotApiMethod> handleMessage(User user, Message message) {
-        String text = message.getText();
+    public List<ResponseMessage> handleMessage(User user, UpdateWrapper wrapper) {
+        String text = wrapper.getMessageData();
         final Logger logger;
         try {
             logger = initLogger();
@@ -41,7 +45,7 @@ public class AuthorizationHandler implements Handler {
         SandboxOpenApi api = factory.createSandboxOpenApiClient(Executors.newSingleThreadExecutor());
 
         boolean isValidToken = checkTokenValidity(api);
-        List<BotApiMethod> messages = addAuthorisationResultMessages(
+        List<ResponseMessage> messages = addAuthorisationResultMessages(
                 user.getChatId(), isValidToken, text);
 
         if (isValidToken) {
@@ -54,20 +58,19 @@ public class AuthorizationHandler implements Handler {
     }
 
     @Override
-    public List<BotApiMethod> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
+    public List<ResponseMessage> handleCallbackQuery(User user, UpdateWrapper wrapper) {
         return Collections.emptyList();
     }
 
-    private List<BotApiMethod> addAuthorisationResultMessages(long chatId, boolean isAuth, String token) {
-        List<BotApiMethod> messages = new ArrayList<>();
+    private List<ResponseMessage> addAuthorisationResultMessages(long chatId, boolean isAuth, String token) {
+        List<ResponseMessage> messages = new ArrayList<>();
 
         if (isAuth) {
-            messages.add(new SendMessage(chatId, "Успешная авторизация")
-                    .setReplyMarkup(Keyboard.getAuthKeyboard()));
+            messages.add(new SimpleMessageResponse(chatId,"Успешная авторизация",Keyboard.getAuthKeyboard()));
         } else {
-            messages.add(new SendMessage(chatId,
+            messages.add(new SimpleMessageResponse(chatId,
                     String.format("Невалидный токен: %s\n", token)));
-            messages.add(new SendMessage(
+            messages.add(new SimpleMessageResponse(
                     chatId, "Введите свой токен"));
         }
         return messages;

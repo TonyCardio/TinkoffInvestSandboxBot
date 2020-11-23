@@ -12,6 +12,10 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.tinkoff.invest.openapi.SandboxContext;
 import ru.tinkoff.invest.openapi.models.Currency;
 import ru.tinkoff.invest.openapi.models.sandbox.CurrencyBalance;
+import wrappers.EditMessageResponse;
+import wrappers.ResponseMessage;
+import wrappers.SimpleMessageResponse;
+import wrappers.UpdateWrapper;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -26,14 +30,14 @@ public class ChoosePortfolioHandler implements Handler {
     private static final BigDecimal addUSDStep = new BigDecimal(50);
 
     @Override
-    public List<BotApiMethod> handleMessage(User user, Message message) {
+    public List<ResponseMessage> handleMessage(User user, UpdateWrapper wrapper) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<BotApiMethod> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
-        String command = callbackQuery.getData();
-        List<BotApiMethod> messages = new ArrayList<>();
+    public List<ResponseMessage> handleCallbackQuery(User user, UpdateWrapper wrapper) {
+        String command = wrapper.getMessageData();
+        List<ResponseMessage> messages = new ArrayList<>();
 
         //TODO: replace with HashMap
         if (command.equalsIgnoreCase(CONTINUE_WITH_OLD_PORTFOLIO)) {
@@ -41,7 +45,7 @@ public class ChoosePortfolioHandler implements Handler {
         } else if (command.equalsIgnoreCase(CREATE_NEW_PORTFOLIO))
             messages = handleCreateNewPortfolio(user);
         else if (command.equalsIgnoreCase(USD))
-            messages = handleAddCurrency(user, callbackQuery.getMessage());
+            messages = handleAddCurrency(user, wrapper);
         else if (command.equalsIgnoreCase(ACCEPT))
             messages = handleAccept(user);
 
@@ -49,39 +53,35 @@ public class ChoosePortfolioHandler implements Handler {
         return messages;
     }
 
-    private List<BotApiMethod> handleContinue(User user) {
-        List<BotApiMethod> messages = new ArrayList<>();
+    private List<ResponseMessage> handleContinue(User user) {
+        List<ResponseMessage> messages = new ArrayList<>();
 
-        messages.add(new SendMessage(user.getChatId(),
-                "Вы работаете со старым портфелем")
-                .setReplyMarkup(Keyboard.getMenuKeyboard()));
+        messages.add(new SimpleMessageResponse(user.getChatId(),
+                "Вы работаете со старым портфелем", Keyboard.getMenuKeyboard()));
         user.setState(State.MAIN_MENU);
         return messages;
     }
 
-    private List<BotApiMethod> handleCreateNewPortfolio(User user) {
-        List<BotApiMethod> messages = new ArrayList<>();
-        messages.add(new SendMessage(user.getChatId(),
-                "Добавьте валюту или подтвердите создание портфеля")
-                .setReplyMarkup(Keyboard.getAddCurrencyKeyboard()));
+    private List<ResponseMessage> handleCreateNewPortfolio(User user) {
+        List<ResponseMessage> messages = new ArrayList<>();
+        messages.add(new SimpleMessageResponse(user.getChatId(),
+                "Добавьте валюту или подтвердите создание портфеля", Keyboard.getAddCurrencyKeyboard()));
         return messages;
     }
 
-    private List<BotApiMethod> handleAddCurrency(User user, Message message) {
+    private List<ResponseMessage> handleAddCurrency(User user, UpdateWrapper wrapper) {
         user.increaseUSDAmount(addUSDStep);
 
         String text = String.format("Количество валюты обновлено \nUSD: %s\n\n" +
                         "Добавьте валюту или подтвердите создание портфеля",
                 user.getStartUSDAmount());
-
-        return List.of(new EditMessageText()
-                .setChatId(user.getChatId())
-                .setMessageId(message.getMessageId())
-                .setText(text)
-                .setReplyMarkup(Keyboard.getAddCurrencyKeyboard()));
+        return List.of(new EditMessageResponse(text,
+                user.getChatId(),
+                wrapper.getMessageId(),
+                Keyboard.getAddCurrencyKeyboard()));
     }
 
-    private List<BotApiMethod> handleAccept(User user) {
+    private List<ResponseMessage> handleAccept(User user) {
         CurrencyBalance currencyBalanceUSD = new CurrencyBalance(
                 Currency.USD, user.getStartUSDAmount());
 
@@ -90,9 +90,8 @@ public class ChoosePortfolioHandler implements Handler {
         context.setCurrencyBalance(currencyBalanceUSD, null).join();
 
         user.setState(State.MAIN_MENU);
-        return List.of(new SendMessage(user.getChatId(),
-                "Новый портфель успешно создан")
-                .setReplyMarkup(Keyboard.getMenuKeyboard()));
+        return List.of(new SimpleMessageResponse(user.getChatId(),
+                "Новый портфель успешно создан", Keyboard.getMenuKeyboard()));
     }
 
 

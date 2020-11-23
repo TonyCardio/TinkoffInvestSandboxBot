@@ -14,6 +14,9 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.tinkoff.invest.openapi.models.market.*;
+import wrappers.ResponseMessage;
+import wrappers.SimpleMessageResponse;
+import wrappers.UpdateWrapper;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -26,9 +29,9 @@ public class SearchAssetHandler implements Handler {
     public final List<String> InstrumentsFigi = Collections.synchronizedList(new ArrayList<>());
 
     @Override
-    public List<BotApiMethod> handleMessage(User user, Message message) {
-        String text = message.getText();
-        List<BotApiMethod> messages;
+    public List<ResponseMessage> handleMessage(User user, UpdateWrapper wrapper) {
+        String text = wrapper.getMessageData();
+        List<ResponseMessage> messages;
 
         if (text.equalsIgnoreCase(TO_MENU))
             messages = handleToMenu(user);
@@ -40,13 +43,12 @@ public class SearchAssetHandler implements Handler {
         return messages;
     }
 
-    private List<BotApiMethod> handleToMenu(User user) {
+    private List<ResponseMessage> handleToMenu(User user) {
         user.setState(State.MAIN_MENU);
-        return List.of(new SendMessage(user.getChatId(), "Чем займёмся?")
-                .setReplyMarkup(Keyboard.getMenuKeyboard()));
+        return List.of(new SimpleMessageResponse(user.getChatId(), "Чем займёмся?", Keyboard.getMenuKeyboard()));
     }
 
-    private List<BotApiMethod> handleSearchAsset(User user, String text) {
+    private List<ResponseMessage> handleSearchAsset(User user, String text) {
         InstrumentsList instruments = user
                 .getApi()
                 .getMarketContext()
@@ -60,13 +62,12 @@ public class SearchAssetHandler implements Handler {
         }
 
         InlineKeyboard inlineKeyboard = new InlineKeyboard(keyboardButtons);
-        return List.of(new SendMessage(user.getChatId(), "Выберите инструмент:")
-                .setReplyMarkup(inlineKeyboard));
+        return List.of(new SimpleMessageResponse(user.getChatId(), "Выберите инструмент:", inlineKeyboard));
     }
 
     @Override
-    public List<BotApiMethod> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
-        String assetFigi = callbackQuery.getData();
+    public List<ResponseMessage> handleCallbackQuery(User user, UpdateWrapper wrapper) {
+        String assetFigi = wrapper.getMessageData();
         OffsetDateTime currentTime = OffsetDateTime.now();
 
         Optional<HistoricalCandles> historicalCandles = user.getApi()
@@ -80,7 +81,7 @@ public class SearchAssetHandler implements Handler {
 
         Candle lastCandle = Iterables.getLast(candles);
         String text = "Последняя цена инструмента: " + lastCandle.openPrice.toString();
-        return List.of(new SendMessage(user.getChatId(), text));
+        return List.of(new SimpleMessageResponse(user.getChatId(), text));
     }
 
     @Override

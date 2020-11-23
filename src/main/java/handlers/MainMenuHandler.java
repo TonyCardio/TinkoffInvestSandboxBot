@@ -11,6 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
 import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
+import wrappers.ResponseMessage;
+import wrappers.SimpleMessageResponse;
+import wrappers.UpdateWrapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,9 +35,9 @@ public class MainMenuHandler implements Handler {
     }
 
     @Override
-    public List<BotApiMethod> handleMessage(User user, Message message) {
-        String text = message.getText();
-        List<BotApiMethod> messages = new ArrayList<>();
+    public List<ResponseMessage> handleMessage(User user, UpdateWrapper wrapper) {
+        String text = wrapper.getMessageData();
+        List<ResponseMessage> messages = new ArrayList<>();
 
         if (replyButtonsToCommands.containsKey(text)) {
             String command = replyButtonsToCommands.get(text);
@@ -51,11 +54,11 @@ public class MainMenuHandler implements Handler {
     }
 
     @Override
-    public List<BotApiMethod> handleCallbackQuery(User user, CallbackQuery callbackQuery) {
+    public List<ResponseMessage> handleCallbackQuery(User user, UpdateWrapper wrapper) {
         return Collections.emptyList();
     }
 
-    private List<BotApiMethod> handleShowPortfolio(User user) {
+    private List<ResponseMessage> handleShowPortfolio(User user) {
         SandboxOpenApi api = user.getApi();
         Portfolio portfolio = api.getPortfolioContext().getPortfolio(null).join();
 
@@ -66,16 +69,15 @@ public class MainMenuHandler implements Handler {
                     .append(position.balance.intValue())
                     .append("\n");
         }
-
-        return List.of(new SendMessage(user.getChatId(), positions.toString())
-                .enableMarkdown(true));
+        SimpleMessageResponse simpleMessageResponse = new SimpleMessageResponse(user.getChatId(), positions.toString());
+        simpleMessageResponse.enableMarkdown();
+        return List.of(simpleMessageResponse);
     }
 
-    private List<BotApiMethod> handleFindAsset(User user) {
+    private List<ResponseMessage> handleFindAsset(User user) {
         user.setState(State.SEARCH_ASSET);
-        return List.of(new SendMessage(
-                user.getChatId(), "Введите тикер инструмента:")
-                .setReplyMarkup(Keyboard.getToMenuKeyboard()));
+        return List.of(new SimpleMessageResponse(
+                user.getChatId(), "Введите тикер инструмента:", Keyboard.getToMenuKeyboard()));
     }
 
     @Override

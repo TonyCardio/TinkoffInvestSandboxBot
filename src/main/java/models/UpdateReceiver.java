@@ -5,7 +5,11 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import wrappers.ResponseMessage;
+import wrappers.SimpleMessageResponse;
+import wrappers.UpdateWrapper;
 
+import java.sql.Wrapper;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -43,12 +47,8 @@ public class UpdateReceiver {
         chatIdToUser = new ConcurrentHashMap<Long, User>();
     }
 
-    public List<BotApiMethod> handle(Update update) {
-        long chatId;
-        if (isUpdateWithText(update))
-            chatId = update.getMessage().getChatId();
-        else
-            chatId = update.getCallbackQuery().getFrom().getId();
+    public List<ResponseMessage> handle(UpdateWrapper update) {
+        long chatId = update.getChatId();
 
         if (!chatIdToUser.containsKey(chatId))
             chatIdToUser.put(chatId, new User(chatId));
@@ -59,15 +59,15 @@ public class UpdateReceiver {
             user.setState(State.NON_AUTHORIZED);
 
         try {
-            if (isUpdateWithText(update)) {
-                final Message message = update.getMessage();
-                if (message.getText().equals("/start") && !user.getState().equals(State.NONE))
+            if (!update.isCallBackQuery()) {
+                final String messageData = update.getMessageData();
+                if (update.getMessageData().equals("/start") && !user.getState().equals(State.NONE))
                     user.setState(State.NONE);
-                return getHandlerByState(user.getState()).handleMessage(user, message);
-            } else if (update.hasCallbackQuery()) {
-                final CallbackQuery callbackQuery = update.getCallbackQuery();
-                return getHandlerByCallBackQuery(callbackQuery.getData())
-                        .handleCallbackQuery(user, callbackQuery);
+                return getHandlerByState(user.getState()).handleMessage(user, update);
+            } else if (update.isCallBackQuery()){
+                final String callbackQuery = update.getMessageData();
+                return getHandlerByCallBackQuery(update.getMessageData())
+                        .handleCallbackQuery(user, update);
             }
             throw new UnsupportedOperationException();
         } catch (UnsupportedOperationException e) {
@@ -91,10 +91,10 @@ public class UpdateReceiver {
                 .orElseThrow(UnsupportedOperationException::new);
     }
 
-    public static List<BotApiMethod> handleHelp(Update update) {
-        String chatId = update.getMessage().getChatId().toString();
-        SendMessage helpMessage = new SendMessage(chatId, helpers);
-        helpMessage.enableMarkdown(true);
+    public static List<ResponseMessage> handleHelp(UpdateWrapper wrapper) {
+        long chatId = wrapper.getChatId();
+        SimpleMessageResponse helpMessage = new SimpleMessageResponse(chatId, helpers);
+        helpMessage.enableMarkdown();
         return List.of(helpMessage);
     }
 

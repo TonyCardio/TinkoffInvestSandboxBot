@@ -5,14 +5,15 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 public class UpdateWrapper {
     private long chatId;
     private String messageData;
-    private long messageId;
+    private Integer messageId;
     private boolean isCallBackQuery;
 
+    //region Property
     public boolean isCallBackQuery() {
         return isCallBackQuery;
     }
 
-    public long getMessageId() {
+    public Integer getMessageId() {
         return messageId;
     }
 
@@ -24,6 +25,8 @@ public class UpdateWrapper {
         return chatId;
     }
 
+    //endregion
+
     public UpdateWrapper(Update update) {
         if (update.hasCallbackQuery()) {
             isCallBackQuery = true;
@@ -33,7 +36,6 @@ public class UpdateWrapper {
         } else if (update.hasMessage() && update.getMessage().hasText()) {
             messageData = update.getMessage().getText();
             chatId = update.getMessage().getChatId();
-            messageId = update.getCallbackQuery().getMessage().getMessageId();
         }
     }
 }
