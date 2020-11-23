@@ -6,11 +6,11 @@ public class UpdateWrapper {
     private long chatId;
     private String messageData;
     private Integer messageId;
-    private boolean isCallBackQuery;
+    private boolean hasCallBackQuery;
 
     //region Property
-    public boolean isCallBackQuery() {
-        return isCallBackQuery;
+    public boolean hasHasCallBackQuery() {
+        return hasCallBackQuery;
     }
 
     public Integer getMessageId() {
@@ -29,7 +29,7 @@ public class UpdateWrapper {
 
     public UpdateWrapper(Update update) {
         if (update.hasCallbackQuery()) {
-            isCallBackQuery = true;
+            hasCallBackQuery = true;
             chatId = update.getCallbackQuery().getFrom().getId();
             messageData = update.getCallbackQuery().getData();
             messageId = update.getCallbackQuery().getMessage().getMessageId();

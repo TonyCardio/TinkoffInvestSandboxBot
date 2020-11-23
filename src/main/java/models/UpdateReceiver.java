@@ -1,15 +1,10 @@
 package models;
 
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
+
 import wrappers.ResponseMessage;
 import wrappers.SimpleMessageResponse;
 import wrappers.UpdateWrapper;
 
-import java.sql.Wrapper;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class UpdateReceiver {
     private final List<Handler> handlers;
     private final ConcurrentHashMap<Long, User> chatIdToUser;
-    private static String helpers = "*Я здесь чтобы помочь тебе*" +
+
+    //region Helpers
+
+    private static final String helpers = "*Я здесь чтобы помочь тебе*" +
             "\n\n*Базовые команды*\n" +
             "/start - начало работы\n" +
             "/help - вывод этой справки" +
@@ -42,13 +40,15 @@ public class UpdateReceiver {
             "Токен отображается только один раз, просмотреть его позже не получится." +
             "Тем не менее вы можете выпускать неограниченное количество токенов.";
 
+    //endregion
+
     public UpdateReceiver(List<Handler> handlers) {
         this.handlers = handlers;
-        chatIdToUser = new ConcurrentHashMap<Long, User>();
+        chatIdToUser = new ConcurrentHashMap<>();
     }
 
-    public List<ResponseMessage> handle(UpdateWrapper update) {
-        long chatId = update.getChatId();
+    public List<ResponseMessage> handle(UpdateWrapper updateWrapper) {
+        long chatId = updateWrapper.getChatId();
 
         if (!chatIdToUser.containsKey(chatId))
             chatIdToUser.put(chatId, new User(chatId));
@@ -59,17 +59,11 @@ public class UpdateReceiver {
             user.setState(State.NON_AUTHORIZED);
 
         try {
-            if (!update.isCallBackQuery()) {
-                final String messageData = update.getMessageData();
-                if (update.getMessageData().equals("/start") && !user.getState().equals(State.NONE))
-                    user.setState(State.NONE);
-                return getHandlerByState(user.getState()).handleMessage(user, update);
-            } else if (update.isCallBackQuery()){
-                final String callbackQuery = update.getMessageData();
-                return getHandlerByCallBackQuery(update.getMessageData())
-                        .handleCallbackQuery(user, update);
-            }
-            throw new UnsupportedOperationException();
+            if (updateWrapper.hasHasCallBackQuery())
+                return getHandlerByCallBackQuery(updateWrapper.getMessageData())
+                        .handleCallbackQuery(user, updateWrapper);
+            return getHandlerByState(user.getState())
+                    .handleMessage(user, updateWrapper);
         } catch (UnsupportedOperationException e) {
             return Collections.emptyList();
         }
@@ -96,9 +90,5 @@ public class UpdateReceiver {
         SimpleMessageResponse helpMessage = new SimpleMessageResponse(chatId, helpers);
         helpMessage.enableMarkdown();
         return List.of(helpMessage);
-    }
-
-    private boolean isUpdateWithText(Update update) {
-        return !update.hasCallbackQuery() && update.hasMessage() && update.getMessage().hasText();
     }
 }
