@@ -8,20 +8,20 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import java.util.List;
 
 public class Keyboard {
-    public static ReplyKeyboardMarkup getMenuKeyboard() {
+    public static ResponseKeyboard getMenuKeyboard() {
         List<String> firstRow = List.of("\uD83D\uDCBCПосмотреть портфель\uD83D\uDCBC",
                 "❌Сбросить портфель❌");
         List<String> secondRow = List.of("\uD83D\uDD0EНайти актив\uD83D\uDD0D");
         List<List<String>> rows = List.of(firstRow, secondRow);
-        return KeyboardFactory.makeReplyKeyboard(rows);
+        return new ResponseKeyboard(rows);
     }
 
-    public static ReplyKeyboardMarkup getToMenuKeyboard() {
-        return KeyboardFactory.makeReplyKeyboard(
+    public static ResponseKeyboard getToMenuKeyboard() {
+        return new ResponseKeyboard(
                 List.of(List.of(SearchAssetHandler.TO_MENU)));
     }
 
-    public static InlineKeyboardMarkup getAuthKeyboard() {
+    public static InlineKeyboard getAuthKeyboard() {
         InlineButtonInfo choosePortfolioButtonInfo = new InlineButtonInfo(
                 "Продолжить со старым портфелем",
                 ChoosePortfolioHandler.CONTINUE_WITH_OLD_PORTFOLIO);
@@ -30,10 +30,10 @@ public class Keyboard {
                 ChoosePortfolioHandler.CREATE_NEW_PORTFOLIO);
         List<InlineButtonInfo> firstRowInfo = List.of(choosePortfolioButtonInfo);
         List<InlineButtonInfo> secondRowInfo = List.of(createPortfolioButtonInfo);
-        return KeyboardFactory.makeInlineKeyboard(List.of(firstRowInfo, secondRowInfo));
+        return new InlineKeyboard(List.of(firstRowInfo, secondRowInfo));
     }
 
-    public static InlineKeyboardMarkup getAddCurrencyKeyboard() {
+    public static InlineKeyboard getAddCurrencyKeyboard() {
         InlineButtonInfo addUSDButtonInfo = new InlineButtonInfo(
                 "Добавить 50$",
                 ChoosePortfolioHandler.USD);
@@ -41,6 +41,6 @@ public class Keyboard {
                 "Готово",
                 ChoosePortfolioHandler.ACCEPT);
         List<InlineButtonInfo> keyboardInfo = List.of(addUSDButtonInfo, acceptButtonInfo);
-        return KeyboardFactory.makeInlineKeyboard(List.of(keyboardInfo));
+        return new InlineKeyboard(List.of(keyboardInfo));
     }
 }

@@ -1,6 +1,7 @@
 package models.keyboards;
 
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
@@ -9,22 +10,24 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import java.util.ArrayList;
 import java.util.List;
 
-public class KeyboardFactory {
-    public static ReplyKeyboardMarkup makeReplyKeyboard(List<List<String>> keyboardTexts) {
-        ArrayList<KeyboardRow> rows = getKeyboardRows(keyboardTexts);
-        ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup();
-        keyboard.setResizeKeyboard(true).setKeyboard(rows);
-        return keyboard;
+public class KeyboardsConverter {
+
+    public ReplyKeyboard getReplyKeyboardMarkup(ResponseKeyboard keyboard) {
+        List<KeyboardRow> rows = getKeyboardRows(keyboard.getKeyboardRows());
+        ReplyKeyboardMarkup replyKeyboard = new ReplyKeyboardMarkup();
+        replyKeyboard.setResizeKeyboard(true).setKeyboard(rows);
+        return replyKeyboard;
     }
 
-    public static InlineKeyboardMarkup makeInlineKeyboard(List<List<InlineButtonInfo>> keyboardInfo) {
-        List<List<InlineKeyboardButton>> rows = getInlineKeyboardRows(keyboardInfo);
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        return keyboard.setKeyboard(rows);
+    public static InlineKeyboardMarkup getInlineKeyboardMarkup(InlineKeyboard keyboard) {
+        List<List<InlineKeyboardButton>> rows = getInlineKeyboardRows(keyboard.getKeyboardRows());
+        InlineKeyboardMarkup inlineKeyboard = new InlineKeyboardMarkup();
+        return inlineKeyboard.setKeyboard(rows);
     }
 
-    private static ArrayList<KeyboardRow> getKeyboardRows(List<List<String>> keyboardTexts) {
-        ArrayList<KeyboardRow> rowList = new ArrayList<>();
+    private static List<KeyboardRow> getKeyboardRows(List<List<String>> keyboardTexts) {
+        List<KeyboardRow> rowList = new ArrayList<>();
+
         for (List<String> keyboardText : keyboardTexts) {
             KeyboardRow keyboardRow = new KeyboardRow();
             for (String buttonText : keyboardText) {
@@ -33,11 +36,13 @@ public class KeyboardFactory {
             }
             rowList.add(keyboardRow);
         }
+
         return rowList;
     }
 
     private static List<List<InlineKeyboardButton>> getInlineKeyboardRows(List<List<InlineButtonInfo>> keyboardInfo) {
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
+
         for (List<InlineButtonInfo> keyboardText : keyboardInfo) {
             List<InlineKeyboardButton> keyboardRow = new ArrayList<>();
             for (InlineButtonInfo buttonInfo : keyboardText) {
@@ -48,6 +53,7 @@ public class KeyboardFactory {
             }
             rowList.add(keyboardRow);
         }
+
         return rowList;
     }
 }
