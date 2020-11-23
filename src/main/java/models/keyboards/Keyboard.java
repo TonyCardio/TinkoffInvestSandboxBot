@@ -1,6 +1,7 @@
 package models.keyboards;
 
 import handlers.ChoosePortfolioHandler;
+import handlers.SearchAssetHandler;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 
@@ -13,6 +14,11 @@ public class Keyboard {
         List<String> secondRow = List.of("\uD83D\uDD0EНайти актив\uD83D\uDD0D");
         List<List<String>> rows = List.of(firstRow, secondRow);
         return KeyboardFactory.makeReplyKeyboard(rows);
+    }
+
+    public static ReplyKeyboardMarkup getToMenuKeyboard() {
+        return KeyboardFactory.makeReplyKeyboard(
+                List.of(List.of(SearchAssetHandler.TO_MENU)));
     }
 
     public static InlineKeyboardMarkup getAuthKeyboard() {

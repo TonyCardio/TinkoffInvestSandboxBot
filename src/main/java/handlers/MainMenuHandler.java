@@ -3,10 +3,12 @@ package handlers;
 import models.Handler;
 import models.State;
 import models.User;
+import models.keyboards.Keyboard;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
 import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
 
@@ -37,9 +39,9 @@ public class MainMenuHandler implements Handler {
         if (replyButtonsToCommands.containsKey(text)) {
             String command = replyButtonsToCommands.get(text);
             if (command.equalsIgnoreCase(SHOW_PORTFOLIO))
-                messages = handleShow(user);
+                messages = handleShowPortfolio(user);
             else if (command.equalsIgnoreCase(FIND_ASSET))
-                throw new UnsupportedOperationException();
+                messages = handleFindAsset(user);
             else if (command.equalsIgnoreCase(RESET_PORTFOLIO))
                 throw new UnsupportedOperationException();
             user.setLastQueryTime();
@@ -53,26 +55,27 @@ public class MainMenuHandler implements Handler {
         return Collections.emptyList();
     }
 
-
-    private List<BotApiMethod> handleShow(User user) {
-        List<BotApiMethod> messages = new ArrayList<>();
-
+    private List<BotApiMethod> handleShowPortfolio(User user) {
         SandboxOpenApi api = user.getApi();
         Portfolio portfolio = api.getPortfolioContext().getPortfolio(null).join();
 
         StringBuilder positions = new StringBuilder("*Position  Balance*\n\n");
-        for (Portfolio.PortfolioPosition position :
-                portfolio.positions) {
+        for (Portfolio.PortfolioPosition position : portfolio.positions) {
             positions
                     .append(String.format("%-20s", position.name))
                     .append(position.balance.intValue())
                     .append("\n");
         }
-        messages.add(
-                new SendMessage(user.getChatId(), positions.toString())
-                        .enableMarkdown(true));
 
-        return messages;
+        return List.of(new SendMessage(user.getChatId(), positions.toString())
+                .enableMarkdown(true));
+    }
+
+    private List<BotApiMethod> handleFindAsset(User user) {
+        user.setState(State.SEARCH_ASSET);
+        return List.of(new SendMessage(
+                user.getChatId(), "Введите тикер инструмента:")
+                .setReplyMarkup(Keyboard.getToMenuKeyboard()));
     }
 
     @Override
