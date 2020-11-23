@@ -3,7 +3,7 @@ import models.State;
 import models.User;
 import org.junit.Before;
 import org.junit.Test;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 import java.math.BigDecimal;
 
@@ -14,13 +14,13 @@ import static org.mockito.Mockito.*;
 
 public class ChoosePortfolioHandlerTests {
     private User user;
-    private UpdateWrapper update;
+    private WrappedUpdate update;
     private ChoosePortfolioHandler handler;
 
     @Before
     public void setUp() {
         user = new User(123);
-        update = mock(UpdateWrapper.class);
+        update = mock(WrappedUpdate.class);
         handler = new ChoosePortfolioHandler();
     }
 

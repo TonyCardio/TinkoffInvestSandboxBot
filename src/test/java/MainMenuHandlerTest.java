@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import wrappers.SimpleMessageResponse;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 
 import static org.mockito.Mockito.*;
@@ -13,13 +13,13 @@ import static org.mockito.Mockito.*;
 
 public class MainMenuHandlerTest {
     private User user;
-    private UpdateWrapper update;
+    private WrappedUpdate update;
     private MainMenuHandler handler;
 
     @Before
     public void setUp() {
         user = new User(321);
-        update = mock(UpdateWrapper.class);
+        update = mock(WrappedUpdate.class);
         handler = new MainMenuHandler();
     }
 

@@ -3,7 +3,7 @@ package models;
 
 import wrappers.ResponseMessage;
 import wrappers.SimpleMessageResponse;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 import java.util.Collections;
 import java.util.Date;
@@ -47,8 +47,8 @@ public class UpdateReceiver {
         chatIdToUser = new ConcurrentHashMap<>();
     }
 
-    public List<ResponseMessage> handle(UpdateWrapper updateWrapper) {
-        long chatId = updateWrapper.getChatId();
+    public List<ResponseMessage> handle(WrappedUpdate wrappedUpdate) {
+        long chatId = wrappedUpdate.getChatId();
 
         if (!chatIdToUser.containsKey(chatId))
             chatIdToUser.put(chatId, new User(chatId));
@@ -59,11 +59,11 @@ public class UpdateReceiver {
             user.setState(State.NON_AUTHORIZED);
 
         try {
-            if (updateWrapper.hasHasCallBackQuery())
-                return getHandlerByCallBackQuery(updateWrapper.getMessageData())
-                        .handleCallbackQuery(user, updateWrapper);
+            if (wrappedUpdate.hasHasCallBackQuery())
+                return getHandlerByCallBackQuery(wrappedUpdate.getMessageData())
+                        .handleCallbackQuery(user, wrappedUpdate);
             return getHandlerByState(user.getState())
-                    .handleMessage(user, updateWrapper);
+                    .handleMessage(user, wrappedUpdate);
         } catch (UnsupportedOperationException e) {
             return Collections.emptyList();
         }
@@ -85,7 +85,7 @@ public class UpdateReceiver {
                 .orElseThrow(UnsupportedOperationException::new);
     }
 
-    public static List<ResponseMessage> handleHelp(UpdateWrapper wrapper) {
+    public static List<ResponseMessage> handleHelp(WrappedUpdate wrapper) {
         long chatId = wrapper.getChatId();
         SimpleMessageResponse helpMessage = new SimpleMessageResponse(chatId, helpers);
         helpMessage.enableMarkdown();

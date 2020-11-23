@@ -3,22 +3,16 @@ package handlers;
 import models.Handler;
 import models.State;
 import models.User;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import wrappers.ResponseMessage;
 import wrappers.SimpleMessageResponse;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
-import java.sql.Wrapper;
 import java.util.Collections;
 import java.util.List;
 
 public class StartHandler implements Handler {
     @Override
-    public List<ResponseMessage> handleMessage(User user, UpdateWrapper wrapper) {
+    public List<ResponseMessage> handleMessage(User user, WrappedUpdate wrapper) {
         String startText = "*Привет! Я InvestBot*\n" +
                 "Я помогу тебе улучшить твои навыки в инвестировании и трейдинге" +
                 "Для начала введи свой api-ключ для Tinkoff песочницы.\n" +
@@ -33,7 +27,7 @@ public class StartHandler implements Handler {
     }
 
     @Override
-    public List<ResponseMessage> handleCallbackQuery(User user, UpdateWrapper wrapper) {
+    public List<ResponseMessage> handleCallbackQuery(User user, WrappedUpdate wrapper) {
         return Collections.emptyList();
     }
 

@@ -4,17 +4,12 @@ import models.Handler;
 import models.State;
 import models.User;
 import models.keyboards.Keyboard;
-import models.keyboards.KeyboardType;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
 import ru.tinkoff.invest.openapi.exceptions.WrongTokenException;
 import ru.tinkoff.invest.openapi.okhttp.OkHttpOpenApiFactory;
 import wrappers.ResponseMessage;
 import wrappers.SimpleMessageResponse;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,7 +26,7 @@ import java.util.logging.Logger;
 
 public class AuthorizationHandler implements Handler {
     @Override
-    public List<ResponseMessage> handleMessage(User user, UpdateWrapper wrapper) {
+    public List<ResponseMessage> handleMessage(User user, WrappedUpdate wrapper) {
         String text = wrapper.getMessageData();
         final Logger logger;
         try {
@@ -58,7 +53,7 @@ public class AuthorizationHandler implements Handler {
     }
 
     @Override
-    public List<ResponseMessage> handleCallbackQuery(User user, UpdateWrapper wrapper) {
+    public List<ResponseMessage> handleCallbackQuery(User user, WrappedUpdate wrapper) {
         return Collections.emptyList();
     }
 

@@ -4,18 +4,13 @@ import models.Handler;
 import models.State;
 import models.User;
 import models.keyboards.Keyboard;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.tinkoff.invest.openapi.SandboxContext;
 import ru.tinkoff.invest.openapi.models.Currency;
 import ru.tinkoff.invest.openapi.models.sandbox.CurrencyBalance;
 import wrappers.EditMessageResponse;
 import wrappers.ResponseMessage;
 import wrappers.SimpleMessageResponse;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,12 +25,12 @@ public class ChoosePortfolioHandler implements Handler {
     private static final BigDecimal addUSDStep = new BigDecimal(50);
 
     @Override
-    public List<ResponseMessage> handleMessage(User user, UpdateWrapper wrapper) {
+    public List<ResponseMessage> handleMessage(User user, WrappedUpdate wrapper) {
         return Collections.emptyList();
     }
 
     @Override
-    public List<ResponseMessage> handleCallbackQuery(User user, UpdateWrapper wrapper) {
+    public List<ResponseMessage> handleCallbackQuery(User user, WrappedUpdate wrapper) {
         String command = wrapper.getMessageData();
         List<ResponseMessage> messages = new ArrayList<>();
 
@@ -69,7 +64,7 @@ public class ChoosePortfolioHandler implements Handler {
         return messages;
     }
 
-    private List<ResponseMessage> handleAddCurrency(User user, UpdateWrapper wrapper) {
+    private List<ResponseMessage> handleAddCurrency(User user, WrappedUpdate wrapper) {
         user.increaseUSDAmount(addUSDStep);
 
         String text = String.format("Количество валюты обновлено \nUSD: %s\n\n" +

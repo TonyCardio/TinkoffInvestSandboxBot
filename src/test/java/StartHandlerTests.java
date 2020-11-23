@@ -3,7 +3,7 @@ import models.State;
 import models.User;
 import org.junit.Before;
 import org.junit.Test;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 import static junit.framework.Assert.assertNotSame;
 import static junit.framework.Assert.assertSame;
@@ -12,11 +12,11 @@ import static org.mockito.Mockito.mock;
 public class StartHandlerTests {
     private StartHandler handler;
     private User user;
-    private UpdateWrapper update;
+    private WrappedUpdate update;
 
     @Before
     public void setUp() {
-        update = mock(UpdateWrapper.class);
+        update = mock(WrappedUpdate.class);
         user = new User(123);
         handler = new StartHandler();
     }

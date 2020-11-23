@@ -2,7 +2,7 @@ package wrappers;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-public class UpdateWrapper {
+public class WrappedUpdate {
     private long chatId;
     private String messageData;
     private Integer messageId;
@@ -27,7 +27,7 @@ public class UpdateWrapper {
 
     //endregion
 
-    public UpdateWrapper(Update update) {
+    public WrappedUpdate(Update update) {
         if (update.hasCallbackQuery()) {
             hasCallBackQuery = true;
             chatId = update.getCallbackQuery().getFrom().getId();

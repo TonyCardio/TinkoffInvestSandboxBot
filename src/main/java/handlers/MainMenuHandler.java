@@ -4,16 +4,11 @@ import models.Handler;
 import models.State;
 import models.User;
 import models.keyboards.Keyboard;
-import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
 import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
 import wrappers.ResponseMessage;
 import wrappers.SimpleMessageResponse;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +30,7 @@ public class MainMenuHandler implements Handler {
     }
 
     @Override
-    public List<ResponseMessage> handleMessage(User user, UpdateWrapper update) {
+    public List<ResponseMessage> handleMessage(User user, WrappedUpdate update) {
         String text = update.getMessageData();
         List<ResponseMessage> messages = new ArrayList<>();
 
@@ -54,7 +49,7 @@ public class MainMenuHandler implements Handler {
     }
 
     @Override
-    public List<ResponseMessage> handleCallbackQuery(User user, UpdateWrapper wrapper) {
+    public List<ResponseMessage> handleCallbackQuery(User user, WrappedUpdate wrapper) {
         return Collections.emptyList();
     }
 

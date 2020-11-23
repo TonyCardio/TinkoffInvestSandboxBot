@@ -11,7 +11,7 @@ import models.keyboards.Keyboard;
 import ru.tinkoff.invest.openapi.models.market.*;
 import wrappers.ResponseMessage;
 import wrappers.SimpleMessageResponse;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class SearchAssetHandler implements Handler {
     public final List<String> InstrumentsFigi = Collections.synchronizedList(new ArrayList<>());
 
     @Override
-    public List<ResponseMessage> handleMessage(User user, UpdateWrapper wrapper) {
+    public List<ResponseMessage> handleMessage(User user, WrappedUpdate wrapper) {
         String text = wrapper.getMessageData();
         List<ResponseMessage> messages;
 
@@ -61,7 +61,7 @@ public class SearchAssetHandler implements Handler {
     }
 
     @Override
-    public List<ResponseMessage> handleCallbackQuery(User user, UpdateWrapper wrapper) {
+    public List<ResponseMessage> handleCallbackQuery(User user, WrappedUpdate wrapper) {
         String assetFigi = wrapper.getMessageData();
         OffsetDateTime currentTime = OffsetDateTime.now();
 

@@ -5,7 +5,7 @@ import models.UpdateReceiver;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -17,9 +17,9 @@ public class UpdateReceiverTests {
     private UpdateReceiver receiver;
     private StartHandler startHandler;
     private ChoosePortfolioHandler choosePortfolioHandler;
-    private UpdateWrapper withoutCallbackUpdate;
-    private UpdateWrapper withCallbackUpdate;
-    private UpdateWrapper withUnknownCommandUpdate;
+    private WrappedUpdate withoutCallbackUpdate;
+    private WrappedUpdate withCallbackUpdate;
+    private WrappedUpdate withUnknownCommandUpdate;
 
     @Before
     public void setUp() {
@@ -36,16 +36,16 @@ public class UpdateReceiverTests {
 
     @Ignore
     private void initUpdates() {
-        withoutCallbackUpdate = mock(UpdateWrapper.class);
-        when(withoutCallbackUpdate.isCallBackQuery()).thenReturn(false);
+        withoutCallbackUpdate = mock(WrappedUpdate.class);
+        when(withoutCallbackUpdate.hasHasCallBackQuery()).thenReturn(false);
         when(withoutCallbackUpdate.getMessageData()).thenReturn("data");
 
-        withCallbackUpdate = mock(UpdateWrapper.class);
-        when(withCallbackUpdate.isCallBackQuery()).thenReturn(true);
+        withCallbackUpdate = mock(WrappedUpdate.class);
+        when(withCallbackUpdate.hasHasCallBackQuery()).thenReturn(true);
         when(withCallbackUpdate.getMessageData()).thenReturn("/command");
 
-        withUnknownCommandUpdate = mock(UpdateWrapper.class);
-        when(withUnknownCommandUpdate.isCallBackQuery()).thenReturn(true);
+        withUnknownCommandUpdate = mock(WrappedUpdate.class);
+        when(withUnknownCommandUpdate.hasHasCallBackQuery()).thenReturn(true);
         when(withUnknownCommandUpdate.getMessageData()).thenReturn("/unknown_command");
     }
 

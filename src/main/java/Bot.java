@@ -5,7 +5,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import wrappers.ResponseMessage;
-import wrappers.UpdateWrapper;
+import wrappers.WrappedUpdate;
 
 import java.util.List;
 
@@ -36,13 +36,13 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        UpdateWrapper updateWrapper = new UpdateWrapper(update);
+        WrappedUpdate wrappedUpdate = new WrappedUpdate(update);
         if (!update.hasCallbackQuery() &&
                 update.getMessage().getText().equals("/help")) {
-            sendMessages(UpdateReceiver.handleHelp(updateWrapper));
+            sendMessages(UpdateReceiver.handleHelp(wrappedUpdate));
             return;
         }
-        List<ResponseMessage> responseMessages = updateReceiver.handle(updateWrapper);
+        List<ResponseMessage> responseMessages = updateReceiver.handle(wrappedUpdate);
         sendMessages(responseMessages);
     }
 
