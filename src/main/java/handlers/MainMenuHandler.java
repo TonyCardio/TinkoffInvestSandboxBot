@@ -28,7 +28,7 @@ public class MainMenuHandler implements Handler {
         replyButtonsToCommands.put("\uD83D\uDCBCПосмотреть портфель\uD83D\uDCBC", SHOW_PORTFOLIO);
         replyButtonsToCommands.put("❌Сбросить портфель❌", RESET_PORTFOLIO);
         replyButtonsToCommands.put("\uD83D\uDD0EНайти актив\uD83D\uDD0D", FIND_ASSET);
-        replyButtonsToCommands.put("Показать статистику", SHOW_STATISTIC);
+        replyButtonsToCommands.put("\uD83D\uDCC8Показать статистику\uD83D\uDCC8", SHOW_STATISTIC);
     }
 
     @Override

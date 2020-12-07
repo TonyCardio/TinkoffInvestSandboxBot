@@ -1,18 +1,28 @@
 package handlers;
 
+import com.google.common.collect.Iterables;
 import models.Handler;
 import models.State;
 import models.User;
 import models.keyboards.Keyboard;
+import ru.tinkoff.invest.openapi.models.market.Candle;
+import ru.tinkoff.invest.openapi.models.market.CandleInterval;
+import ru.tinkoff.invest.openapi.models.market.HistoricalCandles;
 import ru.tinkoff.invest.openapi.models.portfolio.InstrumentType;
 import ru.tinkoff.invest.openapi.models.portfolio.Portfolio;
+import ru.tinkoff.invest.openapi.models.portfolio.Portfolio.PortfolioPosition;
 import wrappers.EditMessageResponse;
 import wrappers.ResponseMessage;
 import wrappers.SimpleMessageResponse;
 import wrappers.WrappedUpdate;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PortfolioStatisticHandler implements Handler {
@@ -37,37 +47,72 @@ public class PortfolioStatisticHandler implements Handler {
 
         if (message.getMessageData().equals(TO_MENU))
             return handleToMenu(user);
-        List<Portfolio.PortfolioPosition> positions = portfolio.positions;
+        List<PortfolioPosition> positions = portfolio.positions;
         Integer page = getPage(user, STAY, positions.size());
-        String statistic = getStatistics(positions.get(page));
+        String statistic = getStatistics(user, positions.get(page));
 
         page += 1;
         String oneOf = page + "/" + positions.size();
-        return List.of(new SimpleMessageResponse(user.getChatId(), statistic, Keyboard.getPaginationKeyboard(oneOf)));
+        String generalStatistic = getGeneralStatistic(user, positions);
+        return List.of(new SimpleMessageResponse(user.getChatId(), generalStatistic),
+                new SimpleMessageResponse(user.getChatId(), statistic, Keyboard.getPaginationKeyboard(oneOf)));
     }
 
-    private String getStatistics(Portfolio.PortfolioPosition position) {
-        StringBuilder statistic = new StringBuilder("Statistic\n\n");
+    private String getStatistics(User user, PortfolioPosition position) {
+        StringBuilder statistic = new StringBuilder("Статистика\n\n");
 
-        if (position.instrumentType == InstrumentType.Currency)
-            statistic.append(getStatisticsForPartPosition(position));
-        else
-            statistic.append(getStatisticsForPosition(position));
+        statistic.append(getStatisticsForPosition(user, position));
+
         return statistic.toString();
     }
 
-    private String getStatisticsForPosition(Portfolio.PortfolioPosition position) {
+    private String getStatisticsForPosition(User user, PortfolioPosition position) {
         String partStatistics = getStatisticsForPartPosition(position);
+        Candle candle = getFigiCandle(user, position);
+
         return partStatistics +
-                String.format("\nОжидаемая доходность: %d %s\nСредняя цена позиции: %d %s",
-                        position.expectedYield.value.intValue(), position.expectedYield.currency.toString(),
-                        position.averagePositionPrice.value.intValue(), position.averagePositionPrice.currency.toString());
+                String.format("\nНаибольшая цена:   %d\nНаименьшая цена:   %d\nЦена закрытия:   %d\nОбъём торгов:   %d",
+                        candle.highestPrice.intValue(), candle.lowestPrice.intValue(),
+                        candle.closePrice.intValue(), candle.tradesValue.intValue());
     }
 
-    private String getStatisticsForPartPosition(Portfolio.PortfolioPosition position) {
-        return String.format("%s\nОбъём позиции: %d",
+    private String getStatisticsForPartPosition(PortfolioPosition position) {
+        return String.format("Позиция:   %s\nОбъём позиции:   %d",
                 position.name,
                 position.balance.intValue());
+    }
+
+    private Candle getFigiCandle(User user, PortfolioPosition position) {
+        String assetFigi = position.figi;
+        OffsetDateTime currentTime = OffsetDateTime.now();
+
+        Optional<HistoricalCandles> historicalCandles = user.getApi()
+                .getMarketContext()
+                .getMarketCandles(assetFigi, currentTime.minusWeeks(1),
+                        OffsetDateTime.now(), CandleInterval.DAY).join();
+
+        List<Candle> candles = new ArrayList<>();
+        if (historicalCandles.isPresent())
+            candles = historicalCandles.get().candles;
+
+        return Iterables.getLast(candles);
+    }
+
+    private String getGeneralStatistic(User user, List<PortfolioPosition> positions) {
+        BigDecimal startAmount = user.getStartUSDAmount();
+        if (startAmount.equals(BigDecimal.ZERO)) {
+            startAmount = startAmount.add(BigDecimal.ONE);
+        }
+
+        BigDecimal currentAmount = new BigDecimal(0);
+
+        for (PortfolioPosition position : positions) {
+            currentAmount = currentAmount.add(getFigiCandle(user, position).closePrice);
+        }
+
+        Integer growth = (currentAmount.intValue() * 100) / startAmount.intValue();
+
+        return String.format("Общий рост портфеля составил:   %d", growth);
     }
 
     private Integer getPage(User user, String command, Integer pageCount) {
@@ -79,7 +124,9 @@ public class PortfolioStatisticHandler implements Handler {
         Integer page = chatIdToPage.get(chatId);
         page += pageOffset.get(command);
         page = Math.abs(page);
-        return page % pageCount;
+        page %= pageCount;
+        chatIdToPage.put(chatId, page);
+        return page;
     }
 
     private List<ResponseMessage> handleToMenu(User user) {
@@ -93,8 +140,9 @@ public class PortfolioStatisticHandler implements Handler {
 
         List<Portfolio.PortfolioPosition> positions = portfolio.positions;
         Integer page = getPage(user, callbackQuery.getMessageData(), positions.size());
-        String statistic = getStatistics(positions.get(page));
+        String statistic = getStatistics(user, positions.get(page));
 
+        String generalStatistic = getGeneralStatistic(user, positions);
         page += 1;
         String oneOf = page + "/" + positions.size();
         return List.of(new EditMessageResponse(
