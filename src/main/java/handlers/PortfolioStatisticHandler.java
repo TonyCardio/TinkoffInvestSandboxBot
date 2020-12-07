@@ -37,7 +37,6 @@ public class PortfolioStatisticHandler implements Handler {
 
         if (message.getMessageData().equals(TO_MENU))
             return handleToMenu(user);
-
         List<Portfolio.PortfolioPosition> positions = portfolio.positions;
         Integer page = getPage(user, STAY, positions.size());
         String statistic = getStatistics(positions.get(page));

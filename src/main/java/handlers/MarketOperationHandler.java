@@ -15,6 +15,7 @@ import wrappers.SimpleMessageResponse;
 import wrappers.WrappedUpdate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MarketOperationHandler implements Handler {
@@ -28,7 +29,7 @@ public class MarketOperationHandler implements Handler {
 
     @Override
     public List<ResponseMessage> handleMessage(User user, WrappedUpdate message) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -42,6 +43,8 @@ public class MarketOperationHandler implements Handler {
             messages = handleIncrease(user, update);
         else if (message.equalsIgnoreCase(ACCEPT_BUY) || message.equalsIgnoreCase(ACCEPT_SELL))
             messages = handleAcceptOperation(user, update);
+
+        user.setLastQueryTime();
 
         return messages;
     }

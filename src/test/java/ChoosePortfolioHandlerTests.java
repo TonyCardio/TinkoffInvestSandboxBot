@@ -36,16 +36,7 @@ public class ChoosePortfolioHandlerTests {
 
     @Test
     public void handleContinue_ShouldChangeUserState() {
-        when(update.getMessageData()).thenReturn(ChoosePortfolioHandler.ACCEPT);
-
-        handler.handleCallbackQuery(user, update);
-
-        assertSame(user.getState(), State.MAIN_MENU);
-    }
-
-    @Test
-    public void handleAccept_ShouldChangeUserState() {
-        when(update.getMessageData()).thenReturn(ChoosePortfolioHandler.ACCEPT);
+        when(update.getMessageData()).thenReturn(ChoosePortfolioHandler.CONTINUE_WITH_OLD_PORTFOLIO);
 
         handler.handleCallbackQuery(user, update);
 
@@ -58,6 +49,16 @@ public class ChoosePortfolioHandlerTests {
                 ChoosePortfolioHandler.CONTINUE_WITH_OLD_PORTFOLIO);
         long preQueryTime = user.getLastQueryTime();
         handler.handleCallbackQuery(user, update);
+
+        assertNotSame(preQueryTime, user.getLastQueryTime());
+    }
+
+    @Test
+    public void handleMessage_ShouldChangeUserLastQueryTime() {
+        when(update.getMessageData()).thenReturn(
+                ChoosePortfolioHandler.CONTINUE_WITH_OLD_PORTFOLIO);
+        long preQueryTime = user.getLastQueryTime();
+        handler.handleMessage(user, update);
 
         assertNotSame(preQueryTime, user.getLastQueryTime());
     }
