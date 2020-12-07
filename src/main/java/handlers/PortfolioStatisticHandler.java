@@ -100,19 +100,18 @@ public class PortfolioStatisticHandler implements Handler {
 
     private String getGeneralStatistic(User user, List<PortfolioPosition> positions) {
         BigDecimal startAmount = user.getStartUSDAmount();
-        if (startAmount.equals(BigDecimal.ZERO)) {
-            startAmount = startAmount.add(BigDecimal.ONE);
-        }
-
         BigDecimal currentAmount = new BigDecimal(0);
 
         for (PortfolioPosition position : positions) {
-            currentAmount = currentAmount.add(getFigiCandle(user, position).closePrice);
+            if (position.instrumentType.equals(InstrumentType.Currency))
+                currentAmount = currentAmount.add(position.balance);
+            else
+                currentAmount = currentAmount.add(getFigiCandle(user, position).closePrice.multiply(position.balance));
         }
 
-        Integer growth = (currentAmount.intValue() * 100) / startAmount.intValue();
+        Integer growth = currentAmount.subtract(startAmount).intValue();
 
-        return String.format("Общий рост портфеля составил:   %d", growth);
+        return String.format("Общий рост портфеля составил:   %d $", growth);
     }
 
     private Integer getPage(User user, String command, Integer pageCount) {
@@ -142,7 +141,6 @@ public class PortfolioStatisticHandler implements Handler {
         Integer page = getPage(user, callbackQuery.getMessageData(), positions.size());
         String statistic = getStatistics(user, positions.get(page));
 
-        String generalStatistic = getGeneralStatistic(user, positions);
         page += 1;
         String oneOf = page + "/" + positions.size();
         return List.of(new EditMessageResponse(
