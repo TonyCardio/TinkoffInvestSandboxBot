@@ -19,6 +19,7 @@ public class MainMenuHandler implements Handler {
     public static final String SHOW_PORTFOLIO = "/show";
     public static final String FIND_ASSET = "/find";
     public static final String RESET_PORTFOLIO = "/reset";
+    public static final String SHOW_STATISTIC = "/stat";
 
     private static final HashMap<String, String> replyButtonsToCommands =
             new HashMap<>();
@@ -27,6 +28,7 @@ public class MainMenuHandler implements Handler {
         replyButtonsToCommands.put("\uD83D\uDCBCПосмотреть портфель\uD83D\uDCBC", SHOW_PORTFOLIO);
         replyButtonsToCommands.put("❌Сбросить портфель❌", RESET_PORTFOLIO);
         replyButtonsToCommands.put("\uD83D\uDD0EНайти актив\uD83D\uDD0D", FIND_ASSET);
+        replyButtonsToCommands.put("Показать статистику", SHOW_STATISTIC);
     }
 
     @Override
@@ -40,6 +42,8 @@ public class MainMenuHandler implements Handler {
                 messages = handleShowPortfolio(user);
             else if (command.equalsIgnoreCase(FIND_ASSET))
                 messages = handleFindAsset(user);
+            else if (command.equalsIgnoreCase(SHOW_STATISTIC))
+                messages = handleShowStatistic(user);
             else if (command.equalsIgnoreCase(RESET_PORTFOLIO))
                 throw new UnsupportedOperationException();
             user.setLastQueryTime();
@@ -73,6 +77,12 @@ public class MainMenuHandler implements Handler {
         user.setState(State.SEARCH_ASSET);
         return List.of(new SimpleMessageResponse(
                 user.getChatId(), "Введите тикер инструмента:", Keyboard.getToMenuKeyboard()));
+    }
+
+    private List<ResponseMessage> handleShowStatistic(User user) {
+        user.setState(State.CHECK_STATISTIC);
+        return List.of(new SimpleMessageResponse(
+                user.getChatId(), "Подтвердите отправку статистики", Keyboard.getToMenuKeyboard()));
     }
 
     @Override

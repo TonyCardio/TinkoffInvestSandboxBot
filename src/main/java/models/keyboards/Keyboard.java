@@ -1,6 +1,7 @@
 package models.keyboards;
 
 import handlers.ChoosePortfolioHandler;
+import handlers.PortfolioStatisticHandler;
 import handlers.SearchAssetHandler;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
@@ -11,7 +12,7 @@ public class Keyboard {
     public static ResponseKeyboard getMenuKeyboard() {
         List<String> firstRow = List.of("\uD83D\uDCBCПосмотреть портфель\uD83D\uDCBC",
                 "❌Сбросить портфель❌");
-        List<String> secondRow = List.of("\uD83D\uDD0EНайти актив\uD83D\uDD0D");
+        List<String> secondRow = List.of("\uD83D\uDD0EНайти актив\uD83D\uDD0D", "Показать статистику");
         List<List<String>> rows = List.of(firstRow, secondRow);
         return new ResponseKeyboard(rows);
     }
@@ -41,6 +42,14 @@ public class Keyboard {
                 "Готово",
                 ChoosePortfolioHandler.ACCEPT);
         List<InlineButtonInfo> keyboardInfo = List.of(addUSDButtonInfo, acceptButtonInfo);
+        return new InlineKeyboard(List.of(keyboardInfo));
+    }
+
+    public static InlineKeyboard getPaginationKeyboard(String oneOf) {
+        InlineButtonInfo previousInfo = new InlineButtonInfo("Previous", PortfolioStatisticHandler.PREVIOUS);
+        InlineButtonInfo oneOfInfo = new InlineButtonInfo(oneOf, PortfolioStatisticHandler.STAY);
+        InlineButtonInfo nextInfo = new InlineButtonInfo("Next", PortfolioStatisticHandler.NEXT);
+        List<InlineButtonInfo> keyboardInfo = List.of(previousInfo, oneOfInfo, nextInfo);
         return new InlineKeyboard(List.of(keyboardInfo));
     }
 }

@@ -20,7 +20,8 @@ public class Bot extends TelegramLongPollingBot {
                 new AuthorizationHandler(),
                 new MainMenuHandler(),
                 new SearchAssetHandler(),
-                new ChoosePortfolioHandler());
+                new ChoosePortfolioHandler(),
+                new PortfolioStatisticHandler());
         updateReceiver = new UpdateReceiver(handlers);
     }
 
