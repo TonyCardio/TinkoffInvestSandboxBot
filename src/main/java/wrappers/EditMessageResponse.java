@@ -29,7 +29,7 @@ public class EditMessageResponse implements ResponseMessage {
 
     //endregion
 
-    public EditMessageResponse(String message, long chatId, Integer messageId, InlineKeyboard inlineKeyboard) {
+    public EditMessageResponse(long chatId, String message, Integer messageId, InlineKeyboard inlineKeyboard) {
         this.message = message;
         this.chatId = chatId;
         this.messageId = messageId;

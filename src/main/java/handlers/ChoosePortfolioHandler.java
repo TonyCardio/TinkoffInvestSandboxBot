@@ -70,8 +70,8 @@ public class ChoosePortfolioHandler implements Handler {
         String text = String.format("Количество валюты обновлено \nUSD: %s\n\n" +
                         "Добавьте валюту или подтвердите создание портфеля",
                 user.getStartUSDAmount());
-        return List.of(new EditMessageResponse(text,
-                user.getChatId(),
+        return List.of(new EditMessageResponse(user.getChatId(),
+                text,
                 wrapper.getMessageId(),
                 Keyboard.getAddCurrencyKeyboard()));
     }

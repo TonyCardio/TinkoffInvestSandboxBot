@@ -6,5 +6,6 @@ public enum State {
     CHOOSE_PORTFOLIO,
     MAIN_MENU,
     CHECK_STATISTIC,
-    SEARCH_ASSET
+    SEARCH_ASSET,
+    DO_MARKET_OPERATION
 }

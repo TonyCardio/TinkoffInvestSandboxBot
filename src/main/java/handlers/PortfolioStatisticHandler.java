@@ -99,8 +99,8 @@ public class PortfolioStatisticHandler implements Handler {
         page += 1;
         String oneOf = page + "/" + positions.size();
         return List.of(new EditMessageResponse(
-                statistic,
                 user.getChatId(),
+                statistic,
                 callbackQuery.getMessageId(),
                 Keyboard.getPaginationKeyboard(oneOf)));
     }
